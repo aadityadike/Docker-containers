@@ -3,12 +3,15 @@ package main
 import (
 	"github.com/aadityadike/Docker-containers/tree/master/Go-Application/database"
 	"github.com/gin-gonic/gin"
+	"github.com/joho/godotenv"
 	"log"
 	"os"
 	"time"
 )
 
 func init() {
+	godotenv.Load()
+
 	databaseUrl := os.Getenv("DATABASE")
 
 	if databaseUrl == "" {

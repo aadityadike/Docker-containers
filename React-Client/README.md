@@ -1,27 +1,37 @@
-# React + TypeScript + Vite
+# React
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+This codebase demonstrates the usage of React Query library to fetch and manage data from APIs. It includes two components to display the current time from different APIs using the React Query hooks.
 
-Currently, two official plugins are available:
+## Setup
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+1. Clone this repository using the following command:
 
-## Expanding the ESLint configuration
+2. Install the dependencies by running:
 
-If you are developing a production application, we recommend updating the configuration to enable type aware lint rules:
+3. Start the development server:
 
-- Configure the top-level `parserOptions` property like this:
+## Components
 
-```js
-   parserOptions: {
-    ecmaVersion: 'latest',
-    sourceType: 'module',
-    project: ['./tsconfig.json', './tsconfig.node.json'],
-    tsconfigRootDir: __dirname,
-   },
-```
+### `CurrentTime`
 
-- Replace `plugin:@typescript-eslint/recommended` to `plugin:@typescript-eslint/recommended-type-checked` or `plugin:@typescript-eslint/strict-type-checked`
-- Optionally add `plugin:@typescript-eslint/stylistic-type-checked`
-- Install [eslint-plugin-react](https://github.com/jsx-eslint/eslint-plugin-react) and add `plugin:react/recommended` & `plugin:react/jsx-runtime` to the `extends` list
+The `CurrentTime` component is responsible for fetching and displaying the current time from an API using the React Query hooks.
+
+- Props:
+- `api` (string): The API endpoint to fetch the current time from.
+
+### `App`
+
+The `App` component is the main entry point of the application. It wraps the components with the necessary context providers and displays the fetched current time from different APIs using the `CurrentTime` component.
+
+## Libraries Used
+
+- React Query: Used for data fetching, caching, and synchronization.
+- React Query Devtools: Used to inspect and debug the state of the queries.
+
+## How to Use
+
+1. Open the application in your browser after following the setup instructions.
+2. You will see the current time fetched from the specified APIs using the `CurrentTime` component.
+3. The React Query Devtools are accessible to inspect the queries and their state.
+
+Feel free to customize and extend this codebase to fit your own use case.

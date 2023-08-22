@@ -1,35 +1,48 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import {
+  QueryClient,
+  QueryClientProvider,
+  useQuery,
+} from "@tanstack/react-query";
+import { ReactQueryDevtools } from "react-query-devtools";
+import axios from "axios";
 
-function App() {
-  const [count, setCount] = useState(0)
+import "./App.css";
 
-  return (
-    <>
-      <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+const queryClient = new QueryClient();
+
+interface currentTimeProps {
+  api: string;
 }
 
-export default App
+function CurrentTime(props: currentTimeProps) {
+  const { isLoading, error, data, isFetching } = useQuery({
+    queryKey: [props.api],
+    queryFn: () => axios.get(`${props.api}`).then((res) => res.data),
+  });
+
+  if (isLoading) return `Loading ${props.api}... `;
+
+  if (error) return "An error has occurred: " + { error };
+
+  return (
+    <div className="App">
+      <p>---</p>
+      <p>API: {data.api}</p>
+      <p>Time from DB: {data.now}</p>
+      <div>{isFetching ? "Updating..." : ""}</div>
+    </div>
+  );
+}
+
+export function App() {
+  return (
+    <QueryClientProvider client={queryClient}>
+      <h1>Hey Team! 👋</h1>
+      <CurrentTime api="/api/golang/" />
+      <CurrentTime api="/api/node/" />
+      <ReactQueryDevtools initialIsOpen={false} />
+    </QueryClientProvider>
+  );
+}
+
+export default App;

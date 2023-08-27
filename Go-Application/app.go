@@ -12,7 +12,7 @@ import (
 func init() {
 	godotenv.Load()
 
-	databaseUrl := os.Getenv("DATABASE")
+	databaseUrl := os.Getenv("DATABASE_URL")
 
 	if databaseUrl == "" {
 		log.Fatal("error in getting database url")

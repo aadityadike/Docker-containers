@@ -14,15 +14,15 @@ interface currentTimeProps {
   api: string;
 }
 
-function CurrentTime(props: currentTimeProps) {
+const CurrentTime: React.FC<currentTimeProps> = (children) => {
   const { isLoading, error, data, isFetching } = useQuery({
-    queryKey: [props.api],
-    queryFn: () => axios.get(`${props.api}`).then((res) => res.data),
+    queryKey: [children],
+    queryFn: () => axios.get(`${children}`).then((res) => res.data),
   });
 
-  if (isLoading) return `Loading ${props.api}... `;
+  if (isLoading) return <>`Loading ${children}... `</>;
 
-  if (error) return "An error has occurred: " + { error };
+  if (error) return <>"An error has occurred: " + {error}</>;
 
   return (
     <div className="App">
@@ -32,7 +32,7 @@ function CurrentTime(props: currentTimeProps) {
       <div>{isFetching ? "Updating..." : ""}</div>
     </div>
   );
-}
+};
 
 export function App() {
   return (

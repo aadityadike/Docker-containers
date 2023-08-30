@@ -1,4 +1,4 @@
-FROM node:18.17.1-bullseye As build
+FROM node:18.17.1-bullseye-slim As build
 
 WORKDIR /usr/src/app
 
@@ -6,10 +6,12 @@ WORKDIR /usr/src/app
 # dependencies (better layer caching)
 COPY  package*.json ./
 
+RUN npm install -g pnpm
+
 # Use cache mount to speed up install of existing dependencies
-RUN --mount=type=cache, target=/usr/src/app/.pnpm \ 
-    pnpm set cache /usr/src/app/.pnpm &&  \
-    npm install
+RUN --mount=type=cache,target=/usr/src/app/.pnpm \
+    npm set cache /usr/src/app/.pnpm &&  \
+    pnpm install
 
 COPY . .
 

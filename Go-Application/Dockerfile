@@ -1,54 +1,70 @@
-# Use the base image 'golang:1.21-bookworm' as the starting point for building our image.
-FROM golang:1.21-bookworm as build
+# Pin specific version for stability
+# Use separate stage for building image
+# Use debian for easier build utilities
+FROM golang:1.21.0-bullseye AS build-base
 
-# Set the working directory inside the container to /app.
-WORKDIR /app
+WORKDIR /app 
 
-# Create a user with user ID 1001 named 'aditya'.
-RUN useradd -u 1001 aditya
-
-# Copy the go.mod and go.sum files from the current directory into the container's /app directory.
+# Copy only files required to install dependencies (better layer caching)
 COPY go.mod go.sum ./
 
-# Use the 'go mod download' command to download the dependencies specified in go.mod.
-# This step leverages caching to speed up the dependency download process.
+# Use cache mount to speed up install of existing dependencies
 RUN --mount=type=cache,target=/go/pkg/mod \
-    --mount=type=cache,target=/root/.cache/go-build \
-    go mod download
+  --mount=type=cache,target=/root/.cache/go-build \
+  go mod download
 
-# Copy the rest of the application source code from the current directory into the container's /app directory.
+FROM build-base AS dev
+
+# Install air for hot reload & delve for debugging
+RUN go install github.com/cosmtrek/air@latest && \
+  go install github.com/go-delve/delve/cmd/dlv@latest
+
 COPY . .
 
-# Build the Go application inside the container using the 'go build' command.
-# Several flags are provided to control the build process:
-# -ldflags: Set linker flags, including making the binary externally linked and using static libraries.
-# -tags: Include additional build tags, in this case, 'netgo'.
-# -o: Specify the name of the output binary as 'golang-api'.
-RUN go build \
-    -ldflags="-linkmode external -extldflags -static" \
-    -tags netgo \
-    -o golang-api
+CMD ["air", "-c", ".air.toml"]
 
-# Start a new stage of the Dockerfile using the 'scratch' base image.
+FROM build-base AS build-production
+
+# Add non root user
+RUN useradd -u 1001 nonroot
+
+COPY . .
+
+# Compile healthcheck
+RUN go build \
+  -ldflags="-linkmode external -extldflags -static" \
+  -tags netgo \
+  -o healthcheck \
+  ./healthcheck/healthcheck.go
+
+# Compile application during build rather than at runtime
+# Add flags to statically link binary
+RUN go build \
+  -ldflags="-linkmode external -extldflags -static" \
+  -tags netgo \
+  -o api-golang
+
+# Use separate stage for deployable image
 FROM scratch
 
-# Set an environment variable 'GIN_MODE' to 'release'.
-# This environment variable will affect the behavior of the GIN web framework used in the application.
-ENV GIN_MODE release
+# Set gin mode
+ENV GIN_MODE=release
 
-# Copy the '/etc/passwd' file from the 'build' stage to the current stage.
-# This is needed to include user information in the final image.
-COPY --from=build /etc/passwd /etc/passwd
+WORKDIR /
 
-# Copy the 'golang-api' binary from the 'build' stage into the current stage's root directory.
-COPY --from=build /app/golang-api golang-api
+# Copy the passwd file
+COPY --from=build-production /etc/passwd /etc/passwd
 
-# Set the user context to 'aditya' (the user created in the 'build' stage).
-USER aditya
+# Copy the healthcheck binary from the build stage
+COPY --from=build-production /app/healthcheck/healthcheck healthcheck
 
-# Expose port 8080. This is a hint for users of the image to know which port the application listens on.
+# Copy the app binary from the build stage
+COPY --from=build-production /app/api-golang api-golang
+
+# Use nonroot user
+USER nonroot
+
+# Indicate expected port
 EXPOSE 8080
 
-# Specify the command to run when a container based on this image is started.
-# In this case, it's running the 'golang-api' binary.
-CMD [ "./golang-api" ]
+CMD ["/api-golang"]

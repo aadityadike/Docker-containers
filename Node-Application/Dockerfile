@@ -1,8 +1,8 @@
 # Pin specific version for stability
 # Use slim for reduced image size
-FROM node:19.6-bullseye-slim AS base
+FROM node:18.17.1-bullseye-slim As build
 
-# Specify working directory other than /
+# Specify working directory other than
 WORKDIR /usr/src/app
 
 # Copy only files required to install
@@ -44,4 +44,4 @@ COPY --chown=node:node ./src/ .
 # Indicate expected port
 EXPOSE 3000
 
-CMD [ "node", "index.js"]
+CMD [ "node", "index.js" ]

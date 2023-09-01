@@ -5,14 +5,11 @@ const { Pool } = require("pg");
 databaseURL = process.env.DATABASE_URL;
 
 const pool = new Pool({
-  user: "postgres",
+  user: "aditya",
   database: "DockerPractice",
-  password: "adityaspostgres",
+  password: "adityasdatabase",
   port: 5432,
-  host: "localhost",
 });
-
-console.log(pool);
 
 /*
  * Listen for errors emitted by the pool. If an idle client encounters an error,

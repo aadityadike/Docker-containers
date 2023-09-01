@@ -16,11 +16,11 @@ interface currentTimeProps {
 
 const CurrentTime: React.FC<currentTimeProps> = (children) => {
   const { isLoading, error, data, isFetching } = useQuery({
-    queryKey: [children],
-    queryFn: () => axios.get(`${children}`).then((res) => res.data),
+    queryKey: [children.api],
+    queryFn: () => axios.get(`${children.api}`).then((res) => res.data),
   });
 
-  if (isLoading) return <>`Loading ${children}... `</>;
+  if (isLoading) return <>`Loading ${children.api}... `</>;
 
   if (error) return <>"An error has occurred: " + {error}</>;
 

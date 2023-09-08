@@ -11,4 +11,4 @@ At the top of the dockerfile You can add Two Optional things:
 
 ### ARG 
 
-
+`@db` :  This part of the URL specifies the hostname or IP address of the server where the PostgreSQL database is running. In this case, it's set to "db." The use of "db" as the hostname suggests that the PostgreSQL server is running in a Docker container, and "db" is likely the container name

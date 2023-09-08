@@ -1,15 +1,17 @@
 DOCKERHUB_REPO:=docker push adityadike1/react-client
 
-TAG?=0
 .PHONY: build
-build-TAG:
-	docker build -f ./Dockerfile\
-		-t client-react \
-		./
+build:
+	docker build -t client-react-nginx .
 
 .PHONY: run
 run:
-	docker run --rm -it --name client client-react
+	docker run -d \
+	--network backend \
+	--name client-nginx \
+	-p 80:8080 \
+	--restart unless-stopped \
+	client-react-nginx
 
 .PHONY: push-TAG
 push-TAG:

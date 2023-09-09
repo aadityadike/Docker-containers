@@ -1,10 +1,10 @@
 version: "3.9"
 services:
   client-react-ngnix:
-    image: client-react-nginx
-    lables:
+    labels:
       shipyard.primary-route: true
       shipyard.route: "/"
+    image: client-react-nginx
     build:
       context: ./React-Client
       dockerfile: ./React-Client/Dockerfile
@@ -15,10 +15,11 @@ services:
       - frontend
     restart: unless-stopped
   api-golang:
-    image: api-golang
     labels:
       shipyard.primary-route: true
       shipyard.route: "/api/golang"
+    init: true
+    image: api-golang
     build:
       context: ./Go-Application
       dockerfile: ./Go-Application/Dockerfile
@@ -33,10 +34,11 @@ services:
       - frontend
     restart: unless-stopped
   api-node:
-    image: api-node
     labels:
       shipyard.primary.route: true
       shipyard.route: "/api/node"
+    image: api-node:1.0
+    init: true
     build:
       context: ./Node-Application
       dockerfile: ./Node-Application/Dockerfile
@@ -45,19 +47,22 @@ services:
     depends_on:
       - db
     restart: unless-stopped
-    port: 3000:3000
+    ports:
+      - 3000:3000
     networks:
       - frontend
       - backend
   db:
     image: postgres:15.4-alpine3.18
     volumes:
-      - pgdata: /var/lib/postgresql/data
+      - pgdata:/var/lib/postgresql/data
     environment:
       - POSTGRES_PASSWORD=adityaspostgres
       - POSTGRES_DB=dockerPractice
-    networks: backend
-    ports: 5432:5432
+    networks:
+      - backend
+    ports:
+      - 5432:5432
 volumes:
   pgdata:
 networks:

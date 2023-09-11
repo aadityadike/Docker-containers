@@ -1,0 +1,18 @@
+FROM node:18.17.1-bullseye-slim
+
+WORKDIR /usr/src/app
+
+# Copy only files required to install
+# dependencies (better layer caching)
+COPY ../package*.json ./
+
+RUN npm install -g pnpm
+
+# Use cache mount to speed up install of existing dependencies
+RUN --mount=type=cache,target=/usr/src/app/.pnpm \
+    npm set cache /usr/src/app/.pnpm &&  \
+    pnpm install
+
+COPY ../ .
+
+CMD [ "pnpm", "run", "dev" ]

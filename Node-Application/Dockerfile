@@ -16,7 +16,7 @@ FROM base AS dev
 
 RUN --mount=type=cache,target=/usr/src/app/.pnpm \
     pnpm set store /usr/src/app/.pnpm-store && \
-    pnpm install
+    pnpm i
 
 COPY . .
 

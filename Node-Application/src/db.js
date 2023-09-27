@@ -2,7 +2,7 @@ const fs = require("fs");
 const { Pool } = require("pg");
 
 // If 'DATABASE_URL' is not defined, read the content of the file specified in 'DATABASE_URL_FILE'.
-databaseURL = process.env.DATABASE_URL ||'postgres://postgres:adityaspostgres@db:5432/dockerPractice'
+databaseURL = process.env.DATABASE_URL ||'postgres://postgres:adityaspostgres@localhost:5432/dockerPractice'
 
 const pool = new Pool({
   connectionString: databaseURL ,

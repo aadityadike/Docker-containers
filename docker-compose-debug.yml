@@ -1,0 +1,29 @@
+# Overlay configuration to enable debuggers
+version: "3.9"
+services:
+  api-node:
+    command:
+      - "pnpm"
+      - "run"
+      - "debug-docker"
+    ports:
+      - "3000:3000"
+      # Port for Debugger refer package.json file for more info.
+      - "9229:9229"
+  api-golang:
+    command:
+      - "dlv"
+      - "debug"
+      - "/app/app.go"
+      - "--listen=:4000"
+      - "--headless=true"
+      - "--log=true"
+      - "--log-output=debugger,debuglineerr,gdbwire,lldbout,rpc"
+      - "--accept-multiclient"
+      - "--continue"
+      - "--api-version=2"
+
+    ports:
+      - "8080:8080"
+      # Port for Debugger, delve debugger for golang
+      - "4000:4000"
